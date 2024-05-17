@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Table } from "reactstrap";
+import { getIncompleteWorkOrders } from "../../managers/workOrderManager.js";
 
 const testWorkOrders = [
   {
@@ -70,7 +71,7 @@ export default function WorkOrderList({ loggedInUser }) {
   const [workOrders, setWorkOrders] = useState([]);
 
   useEffect(() => {
-    setWorkOrders(testWorkOrders);
+    getIncompleteWorkOrders().then(setWorkOrders)
   }, []);
 
   return (
