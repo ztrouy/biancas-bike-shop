@@ -1,12 +1,16 @@
 import { useEffect, useState } from "react";
 import { getBikes } from "../../managers/bikeManager.js";
 import { Button, Form, FormGroup, Input, Label } from "reactstrap";
+import { createWorkOrder } from "../../managers/workOrderManager.js";
+import { useNavigate } from "react-router-dom";
 
 export const CreateWorkOrder = ({ loggedInUser }) => {
     const [description, setDescription] = useState("")
     const [bikeId, setBikeId] = useState(0)
     const [bikes, setBikes] = useState([])
 
+    const navigate = useNavigate()
+    
     const handleSubmit = (event) => {
         event.preventDefault()
         const newWorkOrder = {
@@ -14,7 +18,9 @@ export const CreateWorkOrder = ({ loggedInUser }) => {
             description
         }
 
-        console.log(`New work order submitted: ${newWorkOrder.description}, bikeId: ${newWorkOrder.bikeId}`)
+        createWorkOrder(newWorkOrder).then(() => {
+            navigate("/workorders")
+        })
     }
 
     useEffect(() => {
