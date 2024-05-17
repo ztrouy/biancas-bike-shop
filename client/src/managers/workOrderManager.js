@@ -33,3 +33,9 @@ export const completeWorkOrder = (id) => {
 
     return fetch(`${_apiUrl}/${id}/complete`, putOptions)
 }
+
+export const deleteIncompleteWorkOrder = (id) => {
+    const deleteOptions = {method: "DELETE"}
+
+    return fetch(`${_apiUrl}/${id}`, deleteOptions)
+}
