@@ -70,4 +70,24 @@ public class WorkOrderController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpPut("{id}/complete")]
+    [Authorize]
+    public IActionResult CompleteWorkOrder(int id)
+    {
+        WorkOrder workOrder = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
+        if (workOrder == null)
+        {
+            return NotFound();
+        }
+        if (workOrder.DateCompleted != null)
+        {
+            return BadRequest();
+        }
+
+        workOrder.DateCompleted = DateTime.Now;
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
 }
