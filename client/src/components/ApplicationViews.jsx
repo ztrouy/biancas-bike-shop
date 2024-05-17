@@ -4,6 +4,7 @@ import { AuthorizedRoute } from "./auth/AuthorizedRoute";
 import Login from "./auth/Login";
 import Register from "./auth/Register";
 import WorkOrderList from "./workorders/WorkOrderList.jsx";
+import { CreateWorkOrder } from "./workorders/CreateWorkOrder.jsx";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -25,14 +26,23 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
             </AuthorizedRoute>
           }
         />
-        <Route
-          path="workorders"
-          element={
-            <AuthorizedRoute loggedInUser={loggedInUser}>
-              <WorkOrderList />
-            </AuthorizedRoute>
-          }
-        />
+        <Route path="workorders">
+          <Route
+            index
+            element={
+              <AuthorizedRoute loggedInUser={loggedInUser}>
+                <WorkOrderList />
+              </AuthorizedRoute>
+            }
+          />
+          <Route path="create" 
+            element={
+              <AuthorizedRoute loggedInUser={loggedInUser}>
+                <CreateWorkOrder />
+              </AuthorizedRoute>
+            } 
+          />
+        </Route>
         <Route
           path="employees"
           element={
