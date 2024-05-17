@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using BiancasBikes.Data;
 using BiancasBikes.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
+using BiancasBikes.Models;
 
 namespace BiancasBikes.Controllers;
 
@@ -35,5 +36,29 @@ public class UserProfileController : ControllerBase
                 UserName = up.IdentityUser.UserName
             })
             .ToList());
+    }
+
+    [HttpGet("withroles")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult GetWithRoles()
+    {
+        List<UserProfileDTO> userProfiles = _dbContext.UserProfiles
+            .Include(up => up.IdentityUser)
+            .Select(up => new UserProfileDTO
+            {
+                Id = up.Id,
+                FirstName = up.FirstName,
+                LastName = up.LastName,
+                Address = up.Address,
+                Email = up.IdentityUser.Email,
+                UserName = up.IdentityUser.UserName,
+                IdentityUserId = up.IdentityUserId,
+                Roles = _dbContext.UserRoles
+                    .Where(ur => ur.UserId == up.IdentityUserId)
+                    .Select(ur => _dbContext.Roles.SingleOrDefault(r => r.Id == ur.RoleId).Name)
+                    .ToList()
+            }).ToList();
+        
+        return Ok(userProfiles);
     }
 }
