@@ -46,4 +46,28 @@ public class WorkOrderController : ControllerBase
 
         return Created($"/api/workorder/{workOrder.Id}", workOrder);
     }
+
+    [HttpPut("{id}")]
+    [Authorize]
+    public IActionResult UpdateWorkOrder(WorkOrder workOrder, int id)
+    {
+        WorkOrder workOrderToUpdate = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
+        if (workOrderToUpdate == null)
+        {
+            return NotFound();
+        }
+        else if (id != workOrder.Id)
+        {
+            return BadRequest();
+        }
+
+        // These are the only properties that we want to make editable
+        workOrderToUpdate.Description = workOrder.Description;
+        workOrderToUpdate.UserProfileId = workOrder.UserProfileId;
+        workOrderToUpdate.BikeId = workOrder.BikeId;
+
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
 }
