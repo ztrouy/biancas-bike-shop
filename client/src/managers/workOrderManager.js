@@ -27,3 +27,9 @@ export const updateWorkOrder = (workOrder) => {
 
     return fetch(`${_apiUrl}/${workOrder.id}`, putOptions)
 }
+
+export const completeWorkOrder = (id) => {
+    const putOptions = {method: "PUT"}
+
+    return fetch(`${_apiUrl}/${id}/complete`, putOptions)
+}
