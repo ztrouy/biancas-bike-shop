@@ -1,15 +1,31 @@
 import { useEffect, useState } from "react";
-import { Table } from "reactstrap";
-import { getIncompleteWorkOrders } from "../../managers/workOrderManager.js";
+import { Button, Input, Table } from "reactstrap";
+import { getIncompleteWorkOrders, updateWorkOrder } from "../../managers/workOrderManager.js";
 import { Link } from "react-router-dom";
+import { getUserProfiles } from "../../managers/userProfileManager.js";
 
 
 export default function WorkOrderList({ loggedInUser }) {
   const [workOrders, setWorkOrders] = useState([]);
+  const [mechanics, setMechanics] = useState([])
 
   useEffect(() => {
     getIncompleteWorkOrders().then(setWorkOrders)
+    getUserProfiles().then(setMechanics)
   }, []);
+
+  const assignMechanic = (workOrder, mechanicId) => {
+    const clone = structuredClone(workOrder)
+    clone.userProfileId = mechanicId || null
+
+    updateWorkOrder(clone).then(() => {
+        getIncompleteWorkOrders().then(setWorkOrders)
+    })
+}
+
+const completeWorkOrder = (workOrderId) => {
+    console.log(`Completed ${workOrderId}`)
+}
 
   return (
     <>
@@ -36,11 +52,26 @@ export default function WorkOrderList({ loggedInUser }) {
               <td>{wo.description}</td>
               <td>{new Date(wo.dateInitiated).toLocaleDateString()}</td>
               <td>
-                {wo.userProfile
-                  ? `${wo.userProfile.firstName} ${wo.userProfile.lastName}`
-                  : "unassigned"}
+                <Input
+                    type="select"
+                    value={wo.userProfileId || 0}
+                    onChange={event => assignMechanic(wo, parseInt(event.target.value))}
+                >
+                    <option value={0} key={0}>Choose mechanic</option>
+                    {mechanics.map(m => (
+                        <option value={m.id} key={m.id}>{`${m.firstName} ${m.lastName}`}</option>
+                    ))}
+                </Input>
               </td>
-              <td></td>
+              <td>
+                {wo.userProfile && (
+                    <Button 
+                        onClick={() => completeWorkOrder(wo.id)}
+                    >
+                        Mark as Complete
+                    </Button>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>
