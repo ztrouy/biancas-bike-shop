@@ -34,4 +34,16 @@ public class WorkOrderController : ControllerBase
         
         return Ok(workOrders);
     }
+
+    [HttpPost]
+    [Authorize]
+    public IActionResult CreateWorkOrder(WorkOrder workOrder)
+    {
+        workOrder.DateInitiated = DateTime.Now;
+
+        _dbContext.WorkOrders.Add(workOrder);
+        _dbContext.SaveChanges();
+
+        return Created($"/api/workorder/{workOrder.Id}", workOrder);
+    }
 }
