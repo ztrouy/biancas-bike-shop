@@ -5,6 +5,7 @@ import Login from "./auth/Login";
 import Register from "./auth/Register";
 import WorkOrderList from "./workorders/WorkOrderList.jsx";
 import { CreateWorkOrder } from "./workorders/CreateWorkOrder.jsx";
+import { UserProfilesList } from "./userprofiles/UserProfileList.jsx";
 
 export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
   return (
@@ -47,7 +48,7 @@ export default function ApplicationViews({ loggedInUser, setLoggedInUser }) {
           path="employees"
           element={
             <AuthorizedRoute roles={["Admin"]} loggedInUser={loggedInUser}>
-              <p>Employees</p>
+              <UserProfilesList />
             </AuthorizedRoute>
           }
         />
