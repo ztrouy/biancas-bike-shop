@@ -75,17 +75,37 @@ public class WorkOrderController : ControllerBase
     [Authorize]
     public IActionResult CompleteWorkOrder(int id)
     {
-        WorkOrder workOrder = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
-        if (workOrder == null)
+        WorkOrder workOrderToComplete = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
+        if (workOrderToComplete == null)
         {
             return NotFound();
         }
-        if (workOrder.DateCompleted != null)
+        if (workOrderToComplete.DateCompleted != null)
         {
             return BadRequest();
         }
 
-        workOrder.DateCompleted = DateTime.Now;
+        workOrderToComplete.DateCompleted = DateTime.Now;
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
+
+    [HttpDelete("{id}")]
+    [Authorize]
+    public IActionResult DeleteIncompleteWorkOrder(int id)
+    {
+        WorkOrder workOrderToDelete = _dbContext.WorkOrders.SingleOrDefault(wo => wo.Id == id);
+        if (workOrderToDelete == null)
+        {
+            return NotFound();
+        }
+        if (workOrderToDelete.DateCompleted != null)
+        {
+            return BadRequest();
+        }
+
+        _dbContext.Remove(workOrderToDelete);
         _dbContext.SaveChanges();
 
         return NoContent();
