@@ -4,6 +4,7 @@ using BiancasBikes.Data;
 using BiancasBikes.Models.DTOs;
 using Microsoft.EntityFrameworkCore;
 using BiancasBikes.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace BiancasBikes.Controllers;
 
@@ -60,5 +61,35 @@ public class UserProfileController : ControllerBase
             }).ToList();
         
         return Ok(userProfiles);
+    }
+
+    [HttpPost("promote/{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Promte(string id)
+    {
+        IdentityRole role = _dbContext.Roles.SingleOrDefault(r => r.Name == "Admin");
+
+        _dbContext.UserRoles.Add(new IdentityUserRole<string>
+        {
+            RoleId = role.Id,
+            UserId = id
+        });
+        _dbContext.SaveChanges();
+
+        return NoContent();
+    }
+
+    [HttpPost("demote/{id}")]
+    [Authorize(Roles = "Admin")]
+    public IActionResult Demote(string id)
+    {
+        IdentityRole role = _dbContext.Roles.SingleOrDefault(r => r.Name == "Admin");
+        IdentityUserRole<string> userRole = _dbContext.UserRoles
+            .SingleOrDefault(ur => ur.RoleId == role.Id && ur.UserId == id);
+
+        _dbContext.UserRoles.Remove(userRole);
+        _dbContext.SaveChanges();
+
+        return NoContent();
     }
 }
